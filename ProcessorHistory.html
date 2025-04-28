@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Processor Evolution Timeline (Cinematic Final)</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1"></script>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      background: linear-gradient(#0a0a23, #1c1c3c);
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-top: 30px;
+    }
+    h1 {
+      margin-top: 10px;
+      font-size: 28px;
+      color: #00ffe0;
+      text-shadow: 0 0 10px #00ffe0;
+    }
+    .controls, .buttons {
+      margin-top: 10px;
+    }
+    button {
+      background-color: #00ffe0;
+      border: none;
+      color: #0a0a23;
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,255,224,0.5);
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #00bfa5;
+    }
+    #processorEvolutionChart {
+      width: 90vw;
+      max-width: 1000px;
+      height: 60vh;
+      max-height: 500px;
+      margin-top: 20px;
+      background: radial-gradient(circle at center, #202030, #0a0a23);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 0 20px rgba(0,255,255,0.3);
+    }
+    #finalText {
+      margin-top: 20px;
+      font-size: 24px;
+      color: gold;
+      opacity: 0;
+      transition: opacity 2s ease;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Processor Evolution Timeline (1971–2025)</h1>
+
+<div class="controls">
+  <label for="mode">Mode:</label>
+  <select id="mode">
+    <option value="auto">Auto</option>
+    <option value="manual">Manual</option>
+  </select>
+
+  <label for="speed">Speed (ms):</label>
+  <input type="number" id="speed" value="1500" min="500" step="500">
+  <span id="status">Auto Mode: 1500ms</span>
+</div>
+
+<div class="buttons">
+  <button id="playButton">Play</button>
+  <button id="pauseButton">Pause</button>
+  <button id="resetButton">Reset</button>
+  <button id="resetZoomButton">Reset Zoom</button>
+</div>
+
+<canvas id="processorEvolutionChart"></canvas>
+
+<div id="finalText">The Future Has Just Begun ??</div>
+
+<script>
+const ctx = document.getElementById('processorEvolutionChart').getContext('2d');
+
+const milestones = [
+  { year: '1971 (Intel 4004)', value: 0.0023, color: '#00bfff' },
+  { year: '1974 (Intel 8080)', value: 0.006, color: '#00bfff' },
+  { year: '1978 (Intel 8086)', value: 0.029, color: '#00bfff' },
+  { year: '1985 (Intel 80386)', value: 0.275, color: '#00bfff' },
+  { year: '1989 (Intel 80486)', value: 1.2, color: '#00bfff' },
+  { year: '1993 (Pentium)', value: 3.1, color: '#00bfff' },
+  { year: '1995 (Pentium Pro)', value: 5.5, color: '#00bfff' },
+  { year: '1999 (AMD Athlon)', value: 22, color: '#ff4d4d' },
+  { year: '2000 (Pentium 4)', value: 42, color: '#00bfff' },
+  { year: '2003 (AMD Athlon 64)', value: 105, color: '#ff4d4d' },
+  { year: '2006 (Core 2 Duo)', value: 291, color: '#00bfff' },
+  { year: '2008 (Core i7 Nehalem)', value: 731, color: '#00bfff' },
+  { year: '2011 (ARM Cortex A9)', value: 840, color: '#00ff88' },
+  { year: '2017 (AMD Ryzen)', value: 4800, color: '#ff4d4d' },
+  { year: '2018 (Apple A12 Bionic)', value: 6900, color: '#00ff88' },
+  { year: '2020 (Apple M1)', value: 16000, color: '#00ff88' },
+  { year: '2023 (Apple M2 Ultra)', value: 134000, color: '#00ff88' },
+  { year: '2025 (Future)', value: 160000, color: '#ffd700' }
+];
+
+const chartData = {
+  labels: [],
+  datasets: [{
+    label: 'Transistor Count (Millions)',
+    data: [],
+    borderColor: '#00ffe0',
+    backgroundColor: 'rgba(0,255,224,0.1)',
+    borderWidth: 3,
+    fill: true,
+    tension: 0.4,
+    pointBackgroundColor: [],
+    pointBorderColor: [],
+    pointRadius: 5,
+    pointHoverRadius: 8,
+  }]
+};
+
+let clickedIndex = null; // NEW!
+
+const processorEvolutionChart = new Chart(ctx, {
+  type: 'line',
+  data: chartData,
+  options: {
+    maintainAspectRatio: false,
+    responsive: true,
+    layout: { padding: { top: 50, right: 50 } },
+    animation: { duration: 1000, easing: 'easeOutQuart' },
+    plugins: {
+      legend: { display: false },
+      tooltip: { enabled: false },
+      datalabels: {
+        align: ctx => ctx.dataIndex % 2 === 0 ? 'bottom' : 'top',
+        anchor: 'end',
+        offset: 6,
+        font: ctx => ({
+          weight: 'bold',
+          size: (ctx.active || ctx.dataIndex === clickedIndex) ? 16 : 8
+        }),
+        padding: ctx => ctx.active ? 8 : 4,
+        formatter: (value, context) => `${context.chart.data.labels[context.dataIndex]}\n${value.toLocaleString()}M`,
+        color: ctx => ctx.dataIndex === milestones.length - 1 ? 'black' : 'white',
+        backgroundColor: ctx => ctx.dataIndex === milestones.length - 1 ? 'rgba(255, 215, 0, 0.7)' : 'rgba(0,0,0,0.7)',
+        borderRadius: 4,
+      },
+      zoom: {
+        pan: { enabled: true, mode: 'xy' },
+        zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'xy' }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: { display: true, text: 'Transistor Count (Millions)' }
+      },
+      x: {
+        title: { display: true, text: 'Processor Evolution Timeline' },
+        ticks: {
+          maxRotation: 0,
+          minRotation: 0,
+          autoSkip: true
+        }
+      }
+    }
+  },
+  plugins: [ChartDataLabels]
+});
+
+let index = 0;
+let interval;
+let mode = document.getElementById('mode').value;
+let speed = parseInt(document.getElementById('speed').value);
+
+function updateStatus() {
+  document.getElementById('status').innerText = mode === 'auto' ? `Auto Mode: ${speed}ms` : 'Manual Mode: press Spacebar';
+}
+
+function addNextPoint() {
+  if (index < milestones.length) {
+    const m = milestones[index];
+    chartData.labels.push(m.year);
+    chartData.datasets[0].data.push(m.value);
+    chartData.datasets[0].pointBackgroundColor.push(m.color);
+    chartData.datasets[0].pointBorderColor.push(m.color);
+    processorEvolutionChart.update();
+    index++;
+
+    if (index === milestones.length) {
+      setTimeout(() => {
+        document.getElementById('finalText').style.opacity = 1;
+      }, 500);
+    }
+  }
+}
+
+function startAutoMode() {
+  interval = setInterval(() => {
+    addNextPoint();
+    if (index >= milestones.length) clearInterval(interval);
+  }, speed);
+}
+
+function pauseAutoMode() {
+  clearInterval(interval);
+}
+
+function resetChart() {
+  clearInterval(interval);
+  chartData.labels = [];
+  chartData.datasets[0].data = [];
+  chartData.datasets[0].pointBackgroundColor = [];
+  chartData.datasets[0].pointBorderColor = [];
+  index = 0;
+  clickedIndex = null; // reset click
+  processorEvolutionChart.update();
+  document.getElementById('finalText').style.opacity = 0;
+}
+
+document.getElementById('mode').addEventListener('change', function() {
+  mode = this.value;
+  clearInterval(interval);
+  updateStatus();
+  if (mode === 'auto') {
+    speed = parseInt(document.getElementById('speed').value);
+    startAutoMode();
+  }
+});
+
+document.getElementById('speed').addEventListener('input', function() {
+  speed = parseInt(this.value);
+  updateStatus();
+  if (mode === 'auto') {
+    clearInterval(interval);
+    startAutoMode();
+  }
+});
+
+document.getElementById('playButton').addEventListener('click', function() {
+  mode = 'auto';
+  document.getElementById('mode').value = 'auto';
+  updateStatus();
+  clearInterval(interval);
+  startAutoMode();
+});
+
+document.getElementById('pauseButton').addEventListener('click', function() {
+  pauseAutoMode();
+});
+
+document.getElementById('resetButton').addEventListener('click', function() {
+  resetChart();
+});
+
+document.getElementById('resetZoomButton').addEventListener('click', function() {
+  processorEvolutionChart.resetZoom();
+});
+
+document.addEventListener('keydown', function(event) {
+  if (mode === 'manual' && event.code === 'Space') {
+    event.preventDefault();
+    addNextPoint();
+  }
+});
+
+// Pulsing Future 2025
+let pulseUp = true;
+setInterval(() => {
+  if (index >= milestones.length) {
+    const dataset = processorEvolutionChart.data.datasets[0];
+    const futureIndex = milestones.length - 1;
+    dataset.pointRadius[futureIndex] = pulseUp ? 8 : 5;
+    pulseUp = !pulseUp;
+    processorEvolutionChart.update('none');
+  }
+}, 600);
+
+// CLICK ENLARGE TOGGLE
+document.getElementById('processorEvolutionChart').onclick = function(evt) {
+  const points = processorEvolutionChart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+  if (points.length) {
+    const clicked = points[0].index;
+    if (clickedIndex === clicked) {
+      clickedIndex = null;
+    } else {
+      clickedIndex = clicked;
+    }
+    processorEvolutionChart.update();
+  } else {
+    clickedIndex = null;
+    processorEvolutionChart.update();
+  }
+};
+
+// Start Auto
+updateStatus();
+startAutoMode();
+</script>
+
+</body>
+</html>
