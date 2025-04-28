@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Top 20 YouTubers Race Battle</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #0A1128;
+      height: 120%;
+      width: 100%;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      justify-items: center;
+    }
+
+    h1 {
+      color: white;
+      font-size: 5vw;
+      margin: 8vh 0 1vh 0;
+      text-align: center;
+    }
+
+    .chart {
+      width: 90%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 10px 0;
+      gap: 5px;
+      height: 90%;
+      overflow-y: auto;
+    }
+
+    .bar-container {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      transition: all 0.5s ease; /* penting biar pergerakan smooth */
+      position: relative;
+    }
+
+    .label {
+      color: white;
+      font-size: 3.2vw;
+      width: 25%;
+      text-align: left;
+      margin-right: 4px;
+    }
+
+    .bar {
+      height: 20px;
+      width: 0;
+      background-color: #36A2EB;
+      border-radius: 5px;
+      transition: width 0.2s linear;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 5px;
+      box-sizing: border-box;
+      max-width: 100%;
+      overflow: hidden;
+    }
+
+    .number {
+      color: white;
+      font-size: 3vw;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Top 20 YouTubers by Subscribers</h1>
+<div class="chart" id="chart"></div>
+
+<audio id="bg-music" src="https://cdn.pixabay.com/audio/2022/08/31/audio_27f4cfbb92.mp3" autoplay loop></audio>
+
+<script>
+// Data
+let data = [
+  { label: 'MrBeast', value: 388 },
+  { label: 'T-Series', value: 292 },
+  { label: 'SET India', value: 183 },
+  { label: 'Vlad Niki', value: 139 },
+  { label: 'Kids Diana', value: 133 },
+  { label: 'Like Nastya', value: 127 },
+  { label: 'Stokes Twins', value: 123 },
+  { label: 'Zee Music', value: 117 },
+  { label: 'PewDiePie', value: 110 },
+  { label: 'WWE', value: 108 },
+  { label: 'Goldmines', value: 104 },
+  { label: 'KIMPRO', value: 102 },
+  { label: 'Sony SAB', value: 100 },
+  { label: 'ChuChuTV Nursery R', value: 96 },
+  { label: 'Alan\'s Universe', value: 91 },
+  { label: 'Zee TV', value: 89 },
+  { label: '5-Minute Crafts', value: 81 },
+  { label: 'Colors TV', value: 80 },
+  { label: 'A4', value: 78 },
+  { label: 'HYBE LABELS', value: 77 }
+];
+
+// Randomize initial position
+data = data.sort(() => Math.random() - 0.5);
+
+const maxValue = Math.max(...data.map(item => item.value));
+const speeds = data.map(item => item.value / 200);
+const progress = data.map(() => 0);
+const chart = document.getElementById('chart');
+
+// Generate bars
+const containers = [];
+const bars = [];
+const numbers = [];
+
+data.forEach((item, index) => {
+  const container = document.createElement('div');
+  container.className = 'bar-container';
+
+  const label = document.createElement('div');
+  label.className = 'label';
+  label.innerText = item.label;
+
+  const bar = document.createElement('div');
+  bar.className = 'bar';
+  bar.dataset.value = item.value;
+  bar.style.backgroundColor = `hsl(${index * 18}, 80%, 60%)`; // kasih warna beda tiap bar
+
+  const number = document.createElement('div');
+  number.className = 'number';
+  number.innerText = '0M';
+
+  bar.appendChild(number);
+  container.appendChild(label);
+  container.appendChild(bar);
+  chart.appendChild(container);
+
+  containers.push(container);
+  bars.push(bar);
+  numbers.push(number);
+});
+
+// Animate race
+function animateRace() {
+  let done = true;
+
+  progress.forEach((value, index) => {
+    if (value < data[index].value) {
+      done = false;
+      progress[index] += speeds[index];
+      if (progress[index] > data[index].value) progress[index] = data[index].value;
+    }
+
+    const width = (progress[index] / maxValue) * 65;
+    bars[index].style.width = `${width}%`;
+    numbers[index].innerText = `${Math.floor(progress[index])}M`;
+  });
+
+  // Salipan cek tiap frame
+  for (let i = 0; i < containers.length - 1; i++) {
+    const currentWidth = parseFloat(bars[i].style.width);
+    const nextWidth = parseFloat(bars[i + 1].style.width);
+
+    if (currentWidth < nextWidth) {
+      // Swap posisi
+      chart.insertBefore(containers[i + 1], containers[i]);
+      [containers[i], containers[i + 1]] = [containers[i + 1], containers[i]];
+      [bars[i], bars[i + 1]] = [bars[i + 1], bars[i]];
+      [numbers[i], numbers[i + 1]] = [numbers[i + 1], numbers[i]];
+      [progress[i], progress[i + 1]] = [progress[i + 1], progress[i]];
+      [data[i], data[i + 1]] = [data[i + 1], data[i]];
+    }
+  }
+
+  if (!done) {
+    requestAnimationFrame(animateRace);
+  }
+}
+
+animateRace();
+
+// Musik background
+const bgMusic = document.getElementById('bg-music');
+bgMusic.volume = 0.2;
+</script>
+
+</body>
+</html>
