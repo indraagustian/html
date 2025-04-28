@@ -1,0 +1,268 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Top 10 Fastest Things in the Universe - Interactive Version</title>
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    background: url('bg.png') no-repeat center center fixed;
+    background-size: cover;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+  }
+  header {
+    text-align: center;
+    padding: 30px 20px 10px;
+    font-size: 2.5em;
+    font-weight: bold;
+    background: linear-gradient(90deg, #00ffcc, #3366ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 1px;
+    text-shadow: 0px 0px 10px rgba(0,255,255,0.5);
+    animation: glow 2s infinite alternate;
+  }
+  @keyframes glow {
+    from { text-shadow: 0 0 10px rgba(0,255,255,0.5), 0 0 20px rgba(0,255,255,0.4); }
+    to { text-shadow: 0 0 20px rgba(0,255,255,0.8), 0 0 30px rgba(0,255,255,0.6); }
+  }
+  .container {
+    display: flex;
+    height: calc(100vh - 120px);
+  }
+  .info-panel {
+    width: 30%;
+    background: rgba(0,0,0,0.7);
+    padding: 20px;
+    overflow-y: auto;
+    border-right: 2px solid #333;
+  }
+  .info-panel h2 {
+    color: lime;
+    margin-bottom: 20px;
+  }
+  .info-panel p {
+    color: #ccc;
+    font-size: 0.95em;
+    text-align: justify;
+  }
+  .info-panel strong {
+    color: #ffe600;
+    font-weight: bold;
+  }
+  .info-content {
+    opacity: 0;
+    transition: opacity 0.8s ease-in;
+  }
+  .info-content.show {
+    opacity: 1;
+  }
+  .speed-panel {
+    width: 70%;
+    background: rgba(0,0,0,0.7);
+    padding: 20px;
+    overflow-y: auto;
+  }
+  .speed-item {
+    margin-bottom: 20px;
+    cursor: pointer;
+  }
+  .label {
+    margin-bottom: 3px;
+    font-weight: bold;
+    font-size: 1em;
+  }
+  .bar {
+    height: 12px;
+    background: #333;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 5px;
+  }
+  .fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 8px;
+    transition: width 5s ease-out;
+    box-shadow: 0 0 8px #fff;
+  }
+  .fill-1 { background: linear-gradient(90deg, lime, cyan); }
+  .fill-2 { background: linear-gradient(90deg, cyan, blue); }
+  .fill-3 { background: linear-gradient(90deg, orange, red); }
+  .fill-4 { background: linear-gradient(90deg, violet, pink); }
+  .fill-5 { background: linear-gradient(90deg, yellow, orange); }
+  .fill-6 { background: linear-gradient(90deg, lightgreen, green); }
+  .fill-7 { background: linear-gradient(90deg, turquoise, teal); }
+  .fill-8 { background: linear-gradient(90deg, gold, darkorange); }
+  .fill-9 { background: linear-gradient(90deg, magenta, purple); }
+  .fill-10 { background: linear-gradient(90deg, white, silver); }
+  .source {
+    font-size: 0.75em;
+    color: #ccc;
+    margin-bottom: 10px;
+  }
+  .button-group {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .button-group button {
+    background: linear-gradient(90deg, #00ffcc, #3366ff);
+    color: #000;
+    font-weight: bold;
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 0 10px #00ffff;
+    transition: background 0.5s, transform 0.3s;
+  }
+  .button-group button:hover {
+    background: linear-gradient(90deg, #3366ff, #00ffcc);
+    transform: scale(1.05);
+  }
+  a {
+    color: #00ffff;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+</style>
+</head>
+<body>
+
+<header>Top 10 Fastest Things in the Universe</header>
+
+<div class="container">
+  <div class="info-panel" id="infoPanel">
+    <h2>Information</h2>
+    <p>Click a speed item on the right to view detailed information.</p>
+  </div>
+
+  <div class="speed-panel" id="speedPanel">
+    <div class="button-group">
+      <button onclick="startAnimation()">Start Animation</button>
+      <button onclick="resetAnimation()">Reset</button>
+    </div>
+
+    <div class="speed-item" onclick="showInfo(0)">
+      <div class="label">1. Light Speed (1,079,252,848 km/h)</div>
+      <div class="bar"><div class="fill fill-1" data-width="100%"></div></div>
+      <div class="source">Source: NASA</div>
+    </div>
+
+
+    <div class="speed-item" onclick="showInfo(1)">
+      <div class="label">2. Radio Waves (Light Speed)</div>
+      <div class="bar"><div class="fill fill-2" data-width="100%"></div></div>
+      <div class="source">Source: NASA Science</div>
+    </div>
+
+
+    <div class="speed-item" onclick="showInfo(2)">
+      <div class="label">3. Subatomic Particle (Near Light Speed)</div>
+      <div class="bar"><div class="fill fill-3" data-width="98%"></div></div>
+      <div class="source">Source: CERN</div>
+    </div>
+
+
+    <div class="speed-item" onclick="showInfo(3)">
+      <div class="label">4. Electrical Current (720,000,000 km/h)</div>
+      <div class="bar"><div class="fill fill-4" data-width="70%"></div></div>
+      <div class="source">Source: Physics LibreTexts</div>
+    </div>
+
+
+    <div class="speed-item" onclick="showInfo(4)">
+      <div class="label">5. Lightning Plasma (1,600,000 km/h)</div>
+      <div class="bar"><div class="fill fill-5" data-width="10%"></div></div>
+      <div class="source">Source: National Geographic</div>
+    </div>
+
+
+    <div class="speed-item" onclick="showInfo(5)">
+      <div class="label">6. Hyakutake Comet (160,000 km/h)</div>
+      <div class="bar"><div class="fill fill-6" data-width="5%"></div></div>
+      <div class="source">Source: NASA JPL</div>
+    </div>
+
+
+    <div class="speed-item" onclick="showInfo(6)">
+      <div class="label">7. Parker Solar Probe (700,000 km/h)</div>
+      <div class="bar"><div class="fill fill-7" data-width="3%"></div></div>
+      <div class="source">Source: NASA Parker Mission</div>
+    </div>
+
+
+    <div class="speed-item" onclick="showInfo(7)">
+      <div class="label">8. Bullet Speed (4,000 km/h)</div>
+      <div class="bar"><div class="fill fill-8" data-width="1%"></div></div>
+      <div class="source">Source: U.S. Army Reports</div>
+    </div>
+
+
+    <div class="speed-item" onclick="showInfo(8)">
+      <div class="label">9. Brain Signal (400 km/h)</div>
+      <div class="bar"><div class="fill fill-9" data-width="0.5%"></div></div>
+      <div class="source">Source: Scientific American</div>
+    </div>
+
+
+    <div class="speed-item" onclick="showInfo(9)">
+      <div class="label">10. Fastest Human Run (44 km/h)</div>
+      <div class="bar"><div class="fill fill-10" data-width="0.05%"></div></div>
+      <div class="source">Source: World Athletics</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const infos = [
+  "Light travels at a speed of approximately <strong>299,792 kilometers per second</strong> in a vacuum. This speed is constant and represents the <strong>maximum speed limit</strong> in the universe. It underpins <strong>Einstein’s theory of relativity</strong> and affects how we understand time, space, and energy interactions.",
+  "Radio waves are a form of <strong>electromagnetic radiation</strong> that travels at the <strong>speed of light</strong>. Although they have a <strong>much lower frequency</strong> than visible light, their velocity remains the same. Radio waves are crucial for modern communication, including <strong>satellites</strong>, <strong>radar</strong>, and <strong>wireless internet</strong>.",
+  "Particles like <strong>protons</strong> inside the <strong>Large Hadron Collider (LHC)</strong> achieve speeds of <strong>99.9999991%</strong> of the speed of light. They never reach full light speed due to their <strong>mass</strong>. These high energies allow physicists to simulate conditions just moments after the <strong>Big Bang</strong>.",
+  "An electrical signal through a <strong>copper wire</strong> travels at roughly <strong>two-thirds</strong> the speed of light. While individual <strong>electrons</strong> move slowly, the signal itself moves extremely fast, enabling rapid <strong>data transmission</strong> and <strong>communication technologies</strong>.",
+  "Lightning plasma moves at extraordinary speeds, reaching approximately <strong>1,600,000 kilometers per hour</strong>. This movement of charged particles creates a massive electrical discharge, generating the intense <strong>light</strong> and <strong>heat</strong> we see during a <strong>thunderstorm</strong>.",
+  "The <strong>Hyakutake comet</strong> zipped through our solar system at around <strong>160,000 kilometers per hour</strong>. As comets approach the Sun, they accelerate dramatically due to the Sun’s gravitational pull, shedding dust and gas to form a bright <strong>cometary tail</strong> visible from Earth.",
+  "NASA's <strong>Parker Solar Probe</strong> is the fastest human-made object ever, reaching speeds up to <strong>700,000 kilometers per hour</strong>. It was designed to study the <strong>Sun's outer atmosphere</strong> — the <strong>corona</strong> — to better understand <strong>solar wind</strong> and space weather impacts.",
+  "Hypersonic bullets can travel at about <strong>4,000 kilometers per hour</strong>. These projectiles combine incredible <strong>kinetic energy</strong> with extreme speed, dramatically increasing their ability to penetrate armor and hit distant targets.",
+  "In the human nervous system, <strong>myelinated neurons</strong> can transmit signals at speeds of up to <strong>400 kilometers per hour</strong>. This rapid communication enables quick reactions, such as pulling your hand away from a hot surface — a process governed by <strong>reflex arcs</strong>.",
+  "<strong>Usain Bolt</strong> achieved a record sprinting speed of approximately <strong>44 kilometers per hour</strong> during his world record 100-meter dash. His combination of <strong>explosive strength</strong> and <strong>efficient stride</strong> redefined human sprinting performance."
+];
+
+function showInfo(index) {
+  const panel = document.getElementById('infoPanel');
+  panel.innerHTML = `
+    <h2>Information</h2>
+    <div class="info-content">${infos[index]}</div>
+  `;
+  setTimeout(() => {
+    document.querySelector('.info-content').classList.add('show');
+  }, 100);
+}
+
+function startAnimation() {
+  const bars = document.querySelectorAll('.fill');
+  bars.forEach((bar, index) => {
+    setTimeout(() => {
+      bar.style.width = bar.getAttribute('data-width');
+    }, index * 1500);
+  });
+}
+
+function resetAnimation() {
+  const bars = document.querySelectorAll('.fill');
+  bars.forEach((bar) => {
+    bar.style.width = '0%';
+  });
+}
+</script>
+
+</body>
+</html>
